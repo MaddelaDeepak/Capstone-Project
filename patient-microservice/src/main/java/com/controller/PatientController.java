@@ -1,6 +1,8 @@
 package com.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dto.AppointmentDTO;
+import com.exception.CustomException;
+import com.model.Appointment;
 import com.model.Patient;
 import com.repository.PatientFeignClient;
 import com.service.PatientService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @Validated
@@ -27,10 +34,17 @@ public class PatientController
     private PatientFeignClient patientFeignClient; 
 	
 	@PostMapping("/register")
-    public Patient addCustomer(@RequestBody Patient patient) 
+    public Patient addCustomer(@Valid@RequestBody Patient patient) 
     {
         return patientService.addNewPatient(patient);
     }
+	
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) 
+	{
+	    String result = patientService.login(email, password);
+	    return ResponseEntity.ok(result);
+	}
 	
 	@GetMapping("/doctors/{id}")
     public ResponseEntity<?> getDoctorDetailsById(@PathVariable Integer id) 
@@ -43,4 +57,24 @@ public class PatientController
 	{
     	return patientFeignClient.getDoctorBySpecialization(specialization);
     }
+	
+	@PostMapping("/appointment")
+	public Appointment bookAppointment(@Valid@RequestBody Appointment appointment) throws CustomException
+    {
+        return patientService.bookAppointment(appointment);
+    }
+	
+	@GetMapping("/bookings/{id}")
+	public ResponseEntity<?> getDoctorById(@PathVariable Integer id) throws CustomException 
+	{	
+		AppointmentDTO appointment = patientService.getAppointmentDetailsById(id);
+		return new ResponseEntity<>(appointment, HttpStatus.OK);
+	}
+
+	/*@GetMapping("/bookings/{id}")
+	public ResponseEntity<?> getDoctorById1(@PathVariable Integer id) throws CustomException 
+	{
+		Optional<Appointment> appointment = patientService.getAppointmentDetailsById1(id);
+		return new ResponseEntity<>(appointment, HttpStatus.OK);
+	}*/
 }

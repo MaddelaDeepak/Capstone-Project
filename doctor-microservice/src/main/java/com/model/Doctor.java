@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name="doctor")
@@ -17,19 +18,19 @@ public class Doctor
     private Integer id;
 
     @Column(name="name")
-    //@NotEmpty(message="name missing")
+    @NotEmpty(message="name missing")
     private String name;
 
     @Column(name="specialization")
-    //@NotEmpty(message="specialization missing")
+    @NotEmpty(message="specialization missing")
     private String specialization;
 
     @Column(name="expertise")
-    //@NotEmpty(message="expertise missing")
+    @NotEmpty(message="expertise missing")
     private String expertise;
     
     @Column(name="availabile_time")
-    //@NotEmpty(message="availabile_time missing")
+    @NotEmpty(message="availabile_time missing")
     private String availabile_time;
 
 	public Doctor(Integer id, String name, String specialization, String expertise, String availabile_time) 

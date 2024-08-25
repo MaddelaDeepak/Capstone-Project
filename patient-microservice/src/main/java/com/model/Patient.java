@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="patient")
@@ -19,21 +21,27 @@ public class Patient
     private Integer id;
 
     @Column(name="name")
+    @NotEmpty(message="name missing")
     private String name;
 
     @Column(name="date_of_birth")
+    @NotNull(message="date_of_birth missing")
     private LocalDate date_of_birth;
 
     @Column(name="gender")
+    @NotEmpty(message="gender missing")
     private String gender;
     
     @Column(name="contact")
+    @NotEmpty(message="contact missing")
     private String contact;	
     
     @Column(name="email")
+    @NotEmpty(message="email missing")
      private String email;	
     
     @Column(name="password")
+    @NotEmpty(message="password missing")
     private String password;
 
 	public Patient(Integer id, String name, LocalDate date_of_birth, String gender, String contact, String email,
