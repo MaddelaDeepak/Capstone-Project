@@ -1,7 +1,5 @@
 package com.dto;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotEmpty;
 
 public class DoctorDTO 
 {

@@ -10,7 +10,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <properties>
 	<spring-cloud.version>2022.0.3</spring-cloud.version>
-</properties>
+  </properties>
 <dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -20,6 +20,7 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
+		
 </dependencies>
 <dependencyManagement>
 	<dependencies>

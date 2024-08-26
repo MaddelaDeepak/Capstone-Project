@@ -11,4 +11,6 @@ public interface PatientRepository extends CrudRepository<Patient,Integer>
 	Optional<Patient> findByEmailAndPassword(String email, String password);
 	
 	Optional<Patient> findNameById(Integer id);
+	
+	Optional<Patient> findByEmail(String email);
 }

@@ -1,7 +1,7 @@
 package com.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +32,19 @@ public class PatientService
 	@Autowired
     PatientFeignClient patientFeignClient;
 	
-	public Patient addNewPatient(Patient patient) 
+	public ResponseEntity<?> addNewPatient(Patient patient)
 	{
+		// Check if a patient with the same email already exists
+        Optional<Patient> existingPatient = patientRepos.findByEmail(patient.getEmail());
+        
+        if (existingPatient.isPresent()) 
+        {
+            // If patient already exists, return a custom message
+            String message = "Patient already registered with email: " + patient.getEmail();
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        }
 		Patient patient_=patientRepos.save(patient);
-		return patientRepos.save(patient_);
+		return new ResponseEntity<>(patient_, HttpStatus.OK);
 	}
 	public String login(String email, String password) 
 	{
@@ -52,6 +61,7 @@ public class PatientService
 	
 	public Appointment bookAppointment(Appointment appointment) throws CustomException
 	{
+		
 		Optional<Patient> patient =patientRepos.findNameById(appointment.getPatientId());
         if (!patient.isPresent()) 
         {
@@ -69,7 +79,11 @@ public class PatientService
             String[] timeRange = availableTime.split("-");
             LocalTime startTime = LocalTime.parse(timeRange[0]);
             LocalTime endTime = LocalTime.parse(timeRange[1]);
-            
+         // Check if the appointment date is in the past
+            if (appointment.getAppointmentDate().isBefore(LocalDate.now())) 
+            {
+                throw new CustomException("Past dates can't be selected for the appointment.");
+            }
             // Validate the appointment time slot
             if (appointment.getTimeSlot().isBefore(startTime) || appointment.getTimeSlot().isAfter(endTime)) 
             {
@@ -95,11 +109,10 @@ public class PatientService
 
 	    Appointment appointment = appointmentOptional.get();
 	    
-	    ResponseEntity<?> response =patientFeignClient.getDoctorById(appointment.getDoctorId());
+	    ResponseEntity<DoctorDTO> response =patientFeignClient.getDoctorById(appointment.getDoctorId());
 	    
-	    @SuppressWarnings("unchecked")
-		Map<String, Object> doctorMap = (Map<String, Object>) response.getBody();
-	    String doctorName = (String) doctorMap.get("name");
+		DoctorDTO doctor = response.getBody();
+	    String doctorName = doctor.getName();
 	    Optional<Patient> patient = patientRepos.findNameById(appointment.getPatientId());
 	    String patientName = patient.get().getName();
 	    
