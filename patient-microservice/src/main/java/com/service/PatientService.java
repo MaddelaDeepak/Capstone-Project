@@ -32,6 +32,15 @@ public class PatientService
 	@Autowired
     PatientFeignClient patientFeignClient;
 	
+	public ResponseEntity<DoctorDTO> geDoctorById(Integer id)
+	{
+		return patientFeignClient.getDoctorById(id);
+	}
+	
+	 public ResponseEntity<?> getDoctorDetailsBySpecialization(String specialization)
+	 {
+		 return patientFeignClient.getDoctorBySpecialization(specialization);
+	 }
 	public ResponseEntity<?> addNewPatient(Patient patient)
 	{
 		// Check if a patient with the same email already exists
@@ -41,6 +50,13 @@ public class PatientService
         {
             // If patient already exists, return a custom message
             String message = "Patient already registered with email: " + patient.getEmail();
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        }
+        // Validate that the date of birth is a past date
+        if (patient.getDateOfBirth().isAfter(LocalDate.now())) 
+        {
+            // If the date of birth is not in the past, return a custom message
+            String message = "Date of birth must be in the past.";
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 		Patient patient_=patientRepos.save(patient);
@@ -82,6 +98,7 @@ public class PatientService
          // Check if the appointment date is in the past
             if (appointment.getAppointmentDate().isBefore(LocalDate.now())) 
             {
+            	System.out.println(LocalDate.now());
                 throw new CustomException("Past dates can't be selected for the appointment.");
             }
             // Validate the appointment time slot
@@ -125,15 +142,4 @@ public class PatientService
 	    
 	    return appointmentDTO;
 	}
-
-	/*public Optional<Appointment> getAppointmentDetailsById(int id) throws CustomException 
-	{
-		Optional<Appointment> appointment =  appointmentRepos.findById(id);
-		if (!appointment.isPresent()) 
-        {
-            throw new CustomException("No appointment found for application id : "+id);
-        }
-		
-		return appointment;
-	}*/
 }

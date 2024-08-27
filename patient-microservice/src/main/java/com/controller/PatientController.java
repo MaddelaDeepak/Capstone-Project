@@ -1,6 +1,5 @@
 package com.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +17,10 @@ import com.dto.DoctorDTO;
 import com.exception.CustomException;
 import com.model.Appointment;
 import com.model.Patient;
-import com.repository.PatientFeignClient;
 import com.service.PatientService;
-
-import feign.FeignException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @RestController
 @Validated
@@ -31,9 +29,6 @@ public class PatientController
 {
 	@Autowired
 	PatientService patientService;
-	
-	@Autowired
-    private PatientFeignClient patientFeignClient; 
 	
 	@PostMapping("/register")
     public ResponseEntity<?> addCustomer(@Valid@RequestBody Patient patient)
@@ -49,39 +44,23 @@ public class PatientController
 	}
 	
 	@GetMapping("/doctors/{id}")
-    public ResponseEntity<DoctorDTO> getDoctorDetailsById(@PathVariable Integer id) throws CustomException 
+    public ResponseEntity<DoctorDTO> getDoctorDetailsById(@PathVariable @Positive @NotNull Integer id)
 	{
-		try 
-		{
-	        ResponseEntity<DoctorDTO> response = patientFeignClient.getDoctorById(id);
-	        if (response.getStatusCode().is4xxClientError() || response.getBody() == null) 
-	        {
-	            throw new CustomException("No doctor found with ID: " + id);
-	        }
-	        return ResponseEntity.ok(response.getBody());
-	    }
-		catch (FeignException.NotFound e) 
-		{
-	        throw new CustomException("No doctor found with ID: " + id);
-	    } 
+		ResponseEntity<DoctorDTO> response = patientService.geDoctorById(id);
+        return ResponseEntity.ok(response.getBody()); 
+    }
+	@GetMapping("/doctors/")
+    public ResponseEntity<String> handleMissingId() 
+    {
+		return new ResponseEntity<>("Doctor ID is required", HttpStatus.BAD_REQUEST);
+		
     }
 	
 	@GetMapping("/doctors")
-    public ResponseEntity<?> getDoctorDetailsBySpecialization(@RequestParam String specialization) throws CustomException 
+    public ResponseEntity<?> getDoctorDetailsBySpecialization(@RequestParam(value="specialization",required=false) String specialization) 
 	{
-    	try 
-		{
-	        ResponseEntity<?> response = patientFeignClient.getDoctorBySpecialization(specialization);
-	        if (response.getStatusCode().is4xxClientError() || response.getBody() == null) 
-	        {
-	            throw new CustomException("No doctor found with specialization: " + specialization);
-	        }
-	        return ResponseEntity.ok(response.getBody());
-	    } 
-    	catch (FeignException.NotFound e) 
-		{
-	        throw new CustomException("No doctor found with specialization: " + specialization);
-	    }
+		ResponseEntity<?> response = patientService.getDoctorDetailsBySpecialization(specialization);
+        return ResponseEntity.ok(response.getBody());
     }
 	
 	@PostMapping("/appointment")
@@ -91,16 +70,10 @@ public class PatientController
     }
 	
 	@GetMapping("/bookings/{id}")
-	public ResponseEntity<?> getAppointmentById(@PathVariable Integer id) throws CustomException 
+	public ResponseEntity<?> getAppointmentById(@PathVariable @Positive Integer id) throws CustomException 
 	{	
 		AppointmentDTO appointment = patientService.getAppointmentDetailsById(id);
 		return new ResponseEntity<>(appointment, HttpStatus.OK);
 	}
 
-	/*@GetMapping("/bookings/{id}")
-	public ResponseEntity<?> getDoctorById1(@PathVariable Integer id) throws CustomException 
-	{
-		Optional<Appointment> appointment = patientService.getAppointmentDetailsById1(id);
-		return new ResponseEntity<>(appointment, HttpStatus.OK);
-	}*/
 }

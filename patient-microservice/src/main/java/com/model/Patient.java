@@ -26,7 +26,7 @@ public class Patient
 
     @Column(name="date_of_birth")
     @NotNull(message="date_of_birth missing")
-    private LocalDate date_of_birth;
+    private LocalDate dateOfBirth;
 
     @Column(name="gender")
     @NotEmpty(message="gender missing")
@@ -44,24 +44,24 @@ public class Patient
     @NotEmpty(message="password missing")
     private String password;
 
-	public Patient(Integer id, String name, LocalDate date_of_birth, String gender, String contact, String email,
+	public Patient(Integer id, String name, LocalDate dateOfBirth, String gender, String contact, String email,
 			String password) 
 	{
 		super();
 		this.id = id;
 		this.name = name;
-		this.date_of_birth = date_of_birth;
+		this.dateOfBirth = dateOfBirth;
 		this.gender = gender;
 		this.contact = contact;
 		this.email = email;
 		this.password = password;
 	}
 
-	public Patient(String name, LocalDate date_of_birth, String gender, String contact, String email, String password) 
+	public Patient(String name, LocalDate dateOfBirth, String gender, String contact, String email, String password) 
 	{
 		super();
 		this.name = name;
-		this.date_of_birth = date_of_birth;
+		this.dateOfBirth = dateOfBirth;
 		this.gender = gender;
 		this.contact = contact;
 		this.email = email;
@@ -93,14 +93,14 @@ public class Patient
 		this.name = name;
 	}
 
-	public LocalDate getDate_of_birth() 
+	public LocalDate getDateOfBirth() 
 	{
-		return date_of_birth;
+		return dateOfBirth;
 	}
 
-	public void setDate_of_birth(LocalDate date_of_birth) 
+	public void setDateOfBirth(LocalDate dateOfBirth) 
 	{
-		this.date_of_birth = date_of_birth;
+		this.dateOfBirth = dateOfBirth;
 	}
 
 	public String getGender() 
