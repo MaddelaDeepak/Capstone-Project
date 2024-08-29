@@ -13,5 +13,4 @@ public class PatientMain
 	{
 		SpringApplication.run(PatientMain.class, args);
 	}
-
 }

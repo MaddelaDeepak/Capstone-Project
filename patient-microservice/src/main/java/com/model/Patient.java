@@ -8,8 +8,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="patient")
@@ -20,28 +24,35 @@ public class Patient
 	@Column(name="id")
     private Integer id;
 
-    @Column(name="name")
-    @NotEmpty(message="name missing")
+	@Column(name="name")
+    @NotEmpty(message="Name is required")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters and spaces")
     private String name;
 
-    @Column(name="date_of_birth")
-    @NotNull(message="date_of_birth missing")
+	@Column(name="date_of_birth")
+    @NotNull(message="Date of Birth is required")
+    @Past(message = "Date of Birth must be in the past")
     private LocalDate dateOfBirth;
 
-    @Column(name="gender")
-    @NotEmpty(message="gender missing")
+	@Column(name="gender")
+    @NotEmpty(message="Gender is required")
+    @Pattern(regexp = "^(Male|Female|Other)$", message = "Gender must be Male, Female, or Other")
     private String gender;
     
-    @Column(name="contact")
-    @NotEmpty(message="contact missing")
+	@Column(name="contact")
+    @NotEmpty(message="Contact number is required")
+    @Pattern(regexp = "^\\d{10}$", message = "Contact must be a 10-digit number")
     private String contact;	
     
-    @Column(name="email")
-    @NotEmpty(message="email missing")
+	@Column(name="email")
+    @Email(message = "Invalid email format")
+    @NotEmpty(message="Email is required")
      private String email;	
     
-    @Column(name="password")
-    @NotEmpty(message="password missing")
+	@Column(name="password")
+    @NotEmpty(message="Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
 	public Patient(Integer id, String name, LocalDate dateOfBirth, String gender, String contact, String email,
